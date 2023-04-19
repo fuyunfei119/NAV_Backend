@@ -3,18 +3,16 @@ package com.example.javafeatures.Repositry;
 import com.example.javafeatures.Entity.User;
 
 import com.example.javafeatures.Enum.UserFields;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Repository
+@Scope("prototype")
 public class UserRepositry {
-
     private final String TABLENAME = User.class.getName();
 
     private Map<String,Object> FILTERS = new HashMap<>();
@@ -27,7 +25,6 @@ public class UserRepositry {
     }
 
     public Map<String,Object> GetFilters() {
-        System.out.println(FILTERS);
         return FILTERS;
     }
 
@@ -45,5 +42,31 @@ public class UserRepositry {
         }
 
         return null;
+    }
+
+    public List<User> IsEmpty() {
+        if (FILTERS.isEmpty()) return null;
+
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserRepositry that = (UserRepositry) o;
+
+        if (!TABLENAME.equals(that.TABLENAME)) return false;
+        if (!Objects.equals(FILTERS, that.FILTERS)) return false;
+        return Objects.equals(FINALFILTER, that.FINALFILTER);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = TABLENAME.hashCode();
+        result = 31 * result + (FILTERS != null ? FILTERS.hashCode() : 0);
+        result = 31 * result + (FINALFILTER != null ? FINALFILTER.hashCode() : 0);
+        return result;
     }
 }

@@ -15,6 +15,8 @@ public class UserService implements ApplicationEventPublisherAware {
 
     @Autowired
     private UserRepositry userRepositry;
+    @Autowired
+    private UserRepositry userRepositry2;
     private ApplicationEventPublisher publisher;
 
     public User getOne() {
@@ -36,6 +38,14 @@ public class UserService implements ApplicationEventPublisherAware {
                 .SetRange(UserFields.age, 23)
                 .SetRange(UserFields.userName, "YunfeiFU")
                 .FindSet();
+
+        System.out.println(userRepositry2.GetFilters());
+    }
+
+    public void test2() {
+
+        System.out.println(userRepositry);
+        System.out.println(userRepositry2);
     }
 
     @Override

@@ -19,4 +19,9 @@ public class UserEventTest {
     void EventTest() throws NoSuchFieldException {
         userService.test();
     }
+
+    @Test
+    void Test() {
+        userService.test2();
+    }
 }
