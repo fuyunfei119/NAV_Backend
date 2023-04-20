@@ -3,6 +3,7 @@ package com.example.javafeatures.Repositry;
 import com.example.javafeatures.Entity.User;
 
 import com.example.javafeatures.Enum.UserFields;
+import com.example.javafeatures.Repositry.SQL.SQLStatements;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -35,7 +36,7 @@ public class UserRepositry {
         while (iterator.hasNext()) {
             Map.Entry<String, Object> entry = iterator.next();
             FINALFILTER
-                    .append(" "+SQLStatements.AND+" ")
+                    .append(" "+ SQLStatements.AND+" ")
                     .append(entry.getKey())
                     .append(" = ")
                     .append(entry.getValue());
@@ -47,7 +48,7 @@ public class UserRepositry {
     public List<User> IsEmpty() {
         if (FILTERS.isEmpty()) return null;
 
-
+        return null;
     }
 
     @Override

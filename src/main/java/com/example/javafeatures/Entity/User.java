@@ -1,23 +1,9 @@
 package com.example.javafeatures.Entity;
 
-import com.example.javafeatures.Enum.UserFields;
-import com.example.javafeatures.Listener.UserPropertyEventListener;
-import com.mysql.cj.protocol.a.ColumnDefinitionFactory;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.Id;
-import jakarta.persistence.PersistenceContext;
-import org.hibernate.internal.util.PropertiesHelper;
-import org.hibernate.mapping.Column;
-import org.hibernate.tool.schema.extract.spi.ForeignKeyInformation;
-import org.hibernate.type.EnumType;
-import org.springframework.beans.propertyeditors.PropertiesEditor;
 
-@EntityListeners(UserPropertyEventListener.class)
 public class User {
     private String userName;
     private Integer age;
-    @Id
     private Long id;
 
     public static String username;
