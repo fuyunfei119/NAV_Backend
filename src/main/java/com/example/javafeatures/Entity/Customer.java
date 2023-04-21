@@ -164,4 +164,23 @@ public class Customer {
     this.customerType = customerType;
   }
 
+  @Override
+  public String toString() {
+    return "Customer{" +
+            "userId='" + userId + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", emailAddress='" + emailAddress + '\'' +
+            ", phoneNumber='" + phoneNumber + '\'' +
+            ", billingAddress='" + billingAddress + '\'' +
+            ", shippingAddress='" + shippingAddress + '\'' +
+            ", accountCreationDate=" + accountCreationDate +
+            ", lastLoginDate=" + lastLoginDate +
+            ", accountStatus='" + accountStatus + '\'' +
+            ", paymentInformation='" + paymentInformation + '\'' +
+            ", orderHistory='" + orderHistory + '\'' +
+            ", loyaltyPoints=" + loyaltyPoints +
+            ", customerType='" + customerType + '\'' +
+            '}';
+  }
 }

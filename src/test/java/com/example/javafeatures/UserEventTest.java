@@ -1,5 +1,6 @@
 package com.example.javafeatures;
 
+import com.example.javafeatures.Repositry.CustomerRecord;
 import com.example.javafeatures.Repositry.Mapper.CustomerRepositry;
 import com.example.javafeatures.Service.CustomerService;
 import com.example.javafeatures.Service.UserService;
@@ -12,6 +13,8 @@ public class UserEventTest {
 
     private UserService userService;
     private CustomerService customerService;
+    @Autowired
+    private CustomerRecord customerRecord;
 
     @Autowired
     private CustomerRepositry customerRepositry;
@@ -34,6 +37,11 @@ public class UserEventTest {
 
     @Test
     void TestCustomer() throws NoSuchFieldException {
-        customerRepositry.FindSetWithFilters("accountStatus,customerType,paymentInformation","WHERE accountStatus = Active AND customerType = Retail AND paymentInformation = PayPal");
+//        customerRepositry.FindSetWithFilters("accountStatus,customerType,paymentInformation","WHERE accountStatus = Active AND customerType = Retail AND paymentInformation = PayPal");
+    }
+
+    @Test
+    void test2() {
+        System.out.println(customerRepositry.test());
     }
 }
