@@ -1,5 +1,6 @@
 package com.example.javafeatures;
 
+import com.example.javafeatures.Enum.CustomerFields;
 import com.example.javafeatures.Repositry.CustomerRecord;
 import com.example.javafeatures.Repositry.Mapper.CustomerRepositry;
 import com.example.javafeatures.Service.CustomerService;
@@ -31,17 +32,7 @@ public class UserEventTest {
     }
 
     @Test
-    void Test() {
-        userService.test2();
-    }
-
-    @Test
-    void TestCustomer() throws NoSuchFieldException {
-//        customerRepositry.FindSetWithFilters("accountStatus,customerType,paymentInformation","WHERE accountStatus = Active AND customerType = Retail AND paymentInformation = PayPal");
-    }
-
-    @Test
-    void test2() {
-        System.out.println(customerRepositry.test());
+    void TypeTest() {
+        System.out.println(customerRepositry.Test());
     }
 }

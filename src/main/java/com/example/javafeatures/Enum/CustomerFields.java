@@ -13,6 +13,6 @@ public enum CustomerFields {
     accountStatus,
     paymentInformation,
     orderHistory,
-    loyaltyPoints,
+    Points,
     customerType,
 }

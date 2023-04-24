@@ -2,6 +2,9 @@ package com.example.javafeatures.Repositry.Mapper;
 
 import com.example.javafeatures.Entity.Customer;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.type.IntegerTypeHandler;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.StringTypeHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -9,61 +12,162 @@ import java.util.Map;
 @Mapper
 public interface CustomerRepositry {
 
-    final String SQL =
-            "<script>" +
-                    "SELECT " +
-                    "<foreach collection='LoadFields' item='LoadField' separator=','>" +
-                    "#{LoadField}" +
-                    "</foreach>" +
-                    "FROM customer" +
-            "</script>";
+    final String Begin = "<script>";
+    final String End = "</script>";
+    final String WHERE = "WHERE";
+    final String SELECT = "SELECT ";
+    final String FROM = "FROM Customer";
 
-    final String FindSetWithFilters =
-            "<script> " +
-                    "SELECT " +
+    final String FindSet =
+                    Begin +
+                        SELECT +
+                            "<if test='LoadFields.isEmpty()'> * </if>" +
+                            "<if test='!(LoadFields.isEmpty())'>" +
+                                "${LoadFields} "+
+                            "</if>" +
+                        FROM +
+                            "<if test='Filters.isEmpty()'></if>" +
+                            "<if test='!(Filters.isEmpty())'>" +
+                        WHERE +
+                            "<foreach collection='Filters' item='Filter'>" +
+                                "${Filter}" +
+                            "</foreach>" +
+                            "</if>" +
+                    End;
+
+    final String IsEmpty =
+            Begin +
+                    "SELECT EXISTS("+
+                        SELECT +
+                            "<if test='LoadFields.isEmpty()'> * </if>" +
+                            "<if test='!(LoadFields.isEmpty())'>" +
+                                "${LoadFields} "+
+                            "</if>" +
+                        FROM +
+                        "<if test='Filters.isEmpty()'></if>" +
+                        "<if test='!(Filters.isEmpty())'>" +
+                            WHERE +
+                                "<foreach collection='Filters' item='Filter'>" +
+                                    "${Filter}" +
+                                "</foreach>" +
+                        "</if>" +
+                        "LIMIT 1" +
+                    ")"+
+                    End;
+
+    final String FindFirst =
+            Begin +
+                    SELECT +
                     "<if test='LoadFields.isEmpty()'> * </if>" +
                     "<if test='!(LoadFields.isEmpty())'>" +
-                        "<foreach collection='LoadFields' item='LoadField' separator=',' open='(' close=')'>" +
-                            "#{LoadField}" +
-                        "</foreach>" +
+                    "${LoadFields} "+
                     "</if>" +
-                    "FROM customer" +
+                    FROM +
                     "<if test='Filters.isEmpty()'></if>" +
                     "<if test='!(Filters.isEmpty())'>" +
-                    "WHERE " +
-                    "<foreach collection='Filters' item='item' index='key' separator=' AND '>" +
-                    "${key} = #{item}" +
+                    WHERE +
+                    "<foreach collection='Filters' item='Filter'>" +
+                    "${Filter}" +
                     "</foreach>" +
                     "</if>" +
-            "</script>";
+                    "LIMIT 1"+
+                    End;
 
-    final String IsEmptyWithoutFilters =
-            "<script> " +
-                    "SELECT " +
-                    "<foreach collection='LoadFields' item='LoadField' separator=','>" +
-                    "#{LoadField}" +
+    final String FindLast =
+            Begin +
+                    SELECT +
+                    "<if test='LoadFields.isEmpty()'> * </if>" +
+                    "<if test='!(LoadFields.isEmpty())'>" +
+                    "${LoadFields} "+
+                    "</if>" +
+                    FROM +
+                    "<if test='Filters.isEmpty()'></if>" +
+                    "<if test='!(Filters.isEmpty())'>" +
+                    WHERE +
+                    "<foreach collection='Filters' item='Filter'>" +
+                    "${Filter}" +
                     "</foreach>" +
-                    "FROM customer" +
-                    "WHERE" +
-                    "<foreach collection='Filters.entrySet()' index='FilterName' item='FilterValue' separator=','>" +
-                    "${FilterName} = #{FilterValue}" +
-                    "</foreach> " +
-                    "</script>";
+                    "</if>" +
+                    "ORDER BY User_ID DESC "+
+                    "LIMIT 1"+
+                    End;
 
-    @Select(SQL)
-    List<Customer> FindSet(@Param("LoadFields") List<String> LoadFields);
+    final String Find =
+            Begin +
+                    SELECT +
+                    "<if test='LoadFields.isEmpty()'> * </if>" +
+                    "<if test='!(LoadFields.isEmpty())'>" +
+                    "${LoadFields} "+
+                    "</if>" +
+                    FROM +
+                    "<if test='Filters.isEmpty()'></if>" +
+                    "<if test='!(Filters.isEmpty())'>" +
+                    WHERE +
+                    "<foreach collection='Filters' item='Filter'>" +
+                    "${Filter}" +
+                    "</foreach>" +
+                    "</if>" +
+                    "ORDER BY User_ID DESC "+
+                    "LIMIT ${Count}"+
+                    End;
 
-    @Select(FindSetWithFilters)
-    List<Customer> FindSetWithFilters(@Param("LoadFields") List<String> LoadFields, @Param("Filters") Map<String,String> Filters);
+    final String Get =
+            Begin +
+                    SELECT +
+                    "<if test='LoadFields.isEmpty()'> * </if>" +
+                    "<if test='!(LoadFields.isEmpty())'>" +
+                    "${LoadFields} "+
+                    "</if>" +
+                    FROM +
+                    "<if test='Filters.isEmpty()'></if>" +
+                    "<if test='!(Filters.isEmpty())'>" +
+                    WHERE +
+                    "<foreach collection='Filters' item='Filter'>" +
+                    "${Filter}" +
+                    "</foreach>" +
+                    "</if>" +
+                    "LIMIT 1"+
+                    End;
 
-    @Select(IsEmptyWithoutFilters)
-    List<Customer> IsEmptyWithoutFilters(@Param("LoadFields") List<String> LoadFields);
+    final String Count =
+            Begin +
+                    SELECT +
+                    "<if test='LoadFields.isEmpty()'> Count(*) </if>" +
+                    "<if test='!(LoadFields.isEmpty())'>" +
+                    " Count(${LoadFields}) "+
+                    "</if>" +
+                    FROM +
+                    "<if test='Filters.isEmpty()'></if>" +
+                    "<if test='!(Filters.isEmpty())'>" +
+                    WHERE +
+                    "<foreach collection='Filters' item='Filter'>" +
+                    "${Filter}" +
+                    "</foreach>" +
+                    "</if>" +
+                    End;
 
-    @Select("SELECT EXISTS(SELECT #{LoadFields} FROM Customer #{Filters})")
-    Integer IsEmptyWithFilters(@Param("LoadFields") List<String> LoadFields, @Param("Filters") String Filters);
+    @Select(FindSet)
+    List<Customer> FindSet(@Param("LoadFields") String LoadFields, @Param("Filters") List<String> Filters);
 
-    @Select("SELECT * FROM customer WHERE payment_Information = 'PayPal'")
-    List<Customer> test();
+    @Select(IsEmpty)
+    Integer IsEmpty(@Param("LoadFields") String LoadFields, @Param("Filters") List<String> Filters);
 
+    @Select(FindFirst)
+    Customer FindFirst(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+
+    @Select(FindLast)
+    Customer FindLast(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+
+    @Select(Find)
+    List<Customer> Find(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters,@Param("Count") Integer Count);
+
+    @Select(Get)
+    Customer Get(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+
+    @Select(Count)
+    Integer Count(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+
+    @Select("SELECT Points FROM Customer WHERE Points > 100")
+    List<Customer> Test();
 
 }

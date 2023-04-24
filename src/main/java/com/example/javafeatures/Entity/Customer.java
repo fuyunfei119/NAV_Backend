@@ -1,6 +1,9 @@
 package com.example.javafeatures.Entity;
 
 
+import org.springframework.util.ObjectUtils;
+
+import java.lang.runtime.ObjectMethods;
 import java.sql.Date;
 
 public class Customer {
@@ -16,13 +19,13 @@ public class Customer {
   private String accountStatus;
   private String paymentInformation;
   private String orderHistory;
-  private long loyaltyPoints;
+  private Integer Points;
   private String customerType;
 
   public Customer() {
   }
 
-  public Customer(String userId, String firstName, String lastName, String emailAddress, String phoneNumber, String billingAddress, String shippingAddress, Date accountCreationDate, Date lastLoginDate, String accountStatus, String paymentInformation, String orderHistory, long loyaltyPoints, String customerType) {
+  public Customer(String userId, String firstName, String lastName, String emailAddress, String phoneNumber, String billingAddress, String shippingAddress, Date accountCreationDate, Date lastLoginDate, String accountStatus, String paymentInformation, String orderHistory, Integer Points, String customerType) {
     this.userId = userId;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -35,7 +38,7 @@ public class Customer {
     this.accountStatus = accountStatus;
     this.paymentInformation = paymentInformation;
     this.orderHistory = orderHistory;
-    this.loyaltyPoints = loyaltyPoints;
+    this.Points = Points;
     this.customerType = customerType;
   }
 
@@ -47,7 +50,6 @@ public class Customer {
     this.userId = userId;
   }
 
-
   public String getFirstName() {
     return firstName;
   }
@@ -55,7 +57,6 @@ public class Customer {
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }
-
 
   public String getLastName() {
     return lastName;
@@ -65,7 +66,6 @@ public class Customer {
     this.lastName = lastName;
   }
 
-
   public String getEmailAddress() {
     return emailAddress;
   }
@@ -73,7 +73,6 @@ public class Customer {
   public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
   }
-
 
   public String getPhoneNumber() {
     return phoneNumber;
@@ -83,7 +82,6 @@ public class Customer {
     this.phoneNumber = phoneNumber;
   }
 
-
   public String getBillingAddress() {
     return billingAddress;
   }
@@ -91,7 +89,6 @@ public class Customer {
   public void setBillingAddress(String billingAddress) {
     this.billingAddress = billingAddress;
   }
-
 
   public String getShippingAddress() {
     return shippingAddress;
@@ -101,24 +98,21 @@ public class Customer {
     this.shippingAddress = shippingAddress;
   }
 
-
-  public java.sql.Date getAccountCreationDate() {
+  public Date getAccountCreationDate() {
     return accountCreationDate;
   }
 
-  public void setAccountCreationDate(java.sql.Date accountCreationDate) {
+  public void setAccountCreationDate(Date accountCreationDate) {
     this.accountCreationDate = accountCreationDate;
   }
 
-
-  public java.sql.Date getLastLoginDate() {
+  public Date getLastLoginDate() {
     return lastLoginDate;
   }
 
-  public void setLastLoginDate(java.sql.Date lastLoginDate) {
+  public void setLastLoginDate(Date lastLoginDate) {
     this.lastLoginDate = lastLoginDate;
   }
-
 
   public String getAccountStatus() {
     return accountStatus;
@@ -128,7 +122,6 @@ public class Customer {
     this.accountStatus = accountStatus;
   }
 
-
   public String getPaymentInformation() {
     return paymentInformation;
   }
@@ -136,7 +129,6 @@ public class Customer {
   public void setPaymentInformation(String paymentInformation) {
     this.paymentInformation = paymentInformation;
   }
-
 
   public String getOrderHistory() {
     return orderHistory;
@@ -146,15 +138,13 @@ public class Customer {
     this.orderHistory = orderHistory;
   }
 
-
-  public long getLoyaltyPoints() {
-    return loyaltyPoints;
+  public Integer getPoints() {
+    return Points;
   }
 
-  public void setLoyaltyPoints(long loyaltyPoints) {
-    this.loyaltyPoints = loyaltyPoints;
+  public void setPoints(Integer points) {
+    this.Points = points;
   }
-
 
   public String getCustomerType() {
     return customerType;
@@ -179,7 +169,7 @@ public class Customer {
             ", accountStatus='" + accountStatus + '\'' +
             ", paymentInformation='" + paymentInformation + '\'' +
             ", orderHistory='" + orderHistory + '\'' +
-            ", loyaltyPoints=" + loyaltyPoints +
+            ", loyaltyPoints=" + Points +
             ", customerType='" + customerType + '\'' +
             '}';
   }
