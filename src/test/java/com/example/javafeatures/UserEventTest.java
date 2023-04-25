@@ -4,15 +4,15 @@ import com.example.javafeatures.Enum.CustomerFields;
 import com.example.javafeatures.Repositry.CustomerRecord;
 import com.example.javafeatures.Repositry.Mapper.CustomerRepositry;
 import com.example.javafeatures.Service.CustomerService;
-import com.example.javafeatures.Service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class UserEventTest {
 
-    private UserService userService;
+    @Autowired
     private CustomerService customerService;
     @Autowired
     private CustomerRecord customerRecord;
@@ -20,19 +20,16 @@ public class UserEventTest {
     @Autowired
     private CustomerRepositry customerRepositry;
 
-    @Autowired
-    public UserEventTest(UserService userService, CustomerService customerService) {
-        this.userService = userService;
-        this.customerService = customerService;
-    }
-
-    @Test
-    void EventTest() throws NoSuchFieldException {
-        userService.test();
-    }
-
     @Test
     void TypeTest() {
         System.out.println(customerRepositry.Test());
+    }
+
+    @Test
+    @Transactional
+    void EventTest() {
+        customerRecord
+                .Init()
+                .Insert(true,true);
     }
 }

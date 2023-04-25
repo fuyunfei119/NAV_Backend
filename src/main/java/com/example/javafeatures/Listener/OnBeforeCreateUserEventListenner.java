@@ -1,13 +1,13 @@
 package com.example.javafeatures.Listener;
 
-import com.example.javafeatures.Event.OnBeforeCreateUser;
+import com.example.javafeatures.Event.Insert.OnBeforeInsertCustomer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OnBeforeCreateUserEventListenner implements ApplicationListener<OnBeforeCreateUser> {
+public class OnBeforeCreateUserEventListenner implements ApplicationListener<OnBeforeInsertCustomer> {
     @Override
-    public void onApplicationEvent(OnBeforeCreateUser event) {
+    public void onApplicationEvent(OnBeforeInsertCustomer event) {
         System.out.println("OnBeforeCreateUser....");
     }
 }

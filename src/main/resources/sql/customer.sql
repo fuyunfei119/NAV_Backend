@@ -3,17 +3,17 @@ CREATE TABLE Customer (
     User_ID VARCHAR(50) NOT NULL PRIMARY KEY,
     First_Name VARCHAR(50) NOT NULL,
     Last_Name VARCHAR(50) NOT NULL,
-    Email_Address VARCHAR(255) NOT NULL,
-    Phone_Number VARCHAR(20) NOT NULL,
-    Billing_Address VARCHAR(255) NOT NULL,
-    Shipping_Address VARCHAR(255) NOT NULL,
+    Email_Address VARCHAR(255),
+    Phone_Number VARCHAR(20),
+    Billing_Address VARCHAR(255),
+    Shipping_Address VARCHAR(255),
     Account_Creation_Date DATE NOT NULL,
     Last_Login_Date DATE,
     Account_Status ENUM('Active', 'Suspended', 'Closed') NOT NULL,
-    Payment_Information VARCHAR(255) NOT NULL,
+    Payment_Information VARCHAR(255),
     Order_History TEXT,
     Points INT DEFAULT 0,
-    Customer_Type ENUM('Retail', 'Wholesale') NOT NULL
+    Customer_Type ENUM('Retail', 'Wholesale')
 );
 
 INSERT INTO Customer (User_ID,First_Name, Last_Name, Email_Address, Phone_Number, Billing_Address, Shipping_Address, Account_Creation_Date, Last_Login_Date, Account_Status, Payment_Information, Order_History, Points, Customer_Type) VALUES

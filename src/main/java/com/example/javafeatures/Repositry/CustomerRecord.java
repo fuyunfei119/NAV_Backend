@@ -2,14 +2,20 @@ package com.example.javafeatures.Repositry;
 
 import com.example.javafeatures.Entity.Customer;
 import com.example.javafeatures.Enum.CustomerFields;
+import com.example.javafeatures.Event.Init.OnAfterInitCustomer;
+import com.example.javafeatures.Event.Init.OnBeforeInitCustomer;
+import com.example.javafeatures.Event.Insert.OnBeforeInsertCustomer;
 import com.example.javafeatures.Repositry.Mapper.CustomerRepositry;
-import com.example.javafeatures.Repositry.SQL.SQLStatements;
 import com.example.javafeatures.Utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Field;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,9 +26,12 @@ public class CustomerRecord {
 
     @Autowired
     private CustomerRepositry customerRepositry;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
     private final List<String> FILTERS = new ArrayList<>();
     private final List<String> LOADFIELDS = new ArrayList<>();
     private final String PrimaryKey = String.valueOf(CustomerFields.userId);
+    private Customer customer;
 
     public CustomerRecord SetRange(Enum<CustomerFields> Fields, String newValue) throws NoSuchFieldException {
         Field field = Customer.class.getDeclaredField(Fields.name());
@@ -107,12 +116,6 @@ public class CustomerRecord {
                 String.join(", ", LOADFIELDS),FILTERS);
     }
 
-    public CustomerRecord Init() { return this; }
-
-    public CustomerRecord SetCurrentKey() {
-        return this;
-    }
-
     public Integer Count() throws Exception {
 
         if (LOADFIELDS.size() > 1) throw new Exception("There are more than one fields within Count expression!");
@@ -120,12 +123,6 @@ public class CustomerRecord {
         return customerRepositry.Count(
                 String.join(", ", LOADFIELDS),FILTERS);
     }
-
-    public Boolean Delete() { return true; }
-
-    public Boolean Modify() { return true; }
-
-    public Boolean Insert() { return true; }
 
     public CustomerRecord Reset() {
         this.FILTERS.clear();
@@ -215,5 +212,90 @@ public class CustomerRecord {
                 }
             }
         }
+    }
+
+    public CustomerRecord Init() {
+        this.customer = new Customer();
+
+        eventPublisher.publishEvent(new OnBeforeInitCustomer(this,false));
+
+        this.customer.setAccountStatus("Active");
+        this.customer.setLastLoginDate(Date.valueOf(LocalDate.now()));
+
+        eventPublisher.publishEvent(new OnAfterInitCustomer(this,false));
+
+        return this;
+    }
+
+    public Customer GetRecord() {
+        return this.customer;
+    }
+
+    public CustomerRecord SetCurrentKey() {
+        return this;
+    }
+
+    public CustomerRecord Validate(CustomerFields customerFields, Object newValue) throws NoSuchFieldException {
+
+        Customer.class.getDeclaredField(customerFields.name());
+
+        switch (customerFields) {
+            case userId -> OnValidateUserID(newValue);
+            case phoneNumber -> OnValidatePhoneNumber(newValue);
+            case firstName -> OnValidateFirstName(newValue);
+            case lastName -> OnValidateLastName(newValue);
+            case accountCreationDate -> OnValidateAccountCreationDate(newValue);
+        }
+
+        return this;
+    }
+    public Boolean Delete() {
+        eventPublisher.publishEvent(new OnBeforeInitCustomer(this,false));
+
+        customerRepositry.Delete(this.customer);
+        return true;
+
+    }
+
+    public Boolean Modify() { return true; }
+
+    public Boolean Insert(Boolean UseEvent,Boolean FullFields) {
+
+        if (UseEvent) {
+            this.eventPublisher.publishEvent(new OnBeforeInsertCustomer(this));
+        }
+
+        List<String> fieldNameList = EntityUtils.getFieldNameList(this.customer,true);
+        List<Object> valueList = EntityUtils.getFieldValueList(this.customer,true);
+
+        Integer count;
+
+        if (FullFields) {
+            count = customerRepositry.InsertWithFullField(fieldNameList,valueList);
+        }else {
+            count = customerRepositry.Insert(fieldNameList,valueList);
+        }
+
+        return count != 0;
+    }
+
+    private void OnValidateUserID(Object newValue) {
+        this.customer.setUserId(newValue.toString());
+    }
+
+    private void OnValidatePhoneNumber(Object newValue) {
+        this.customer.setPhoneNumber(newValue.toString());
+    }
+
+    private void OnValidateFirstName(Object newValue) {
+        this.customer.setFirstName(newValue.toString());
+    }
+
+    private void OnValidateLastName(Object newValue) {
+        this.customer.setLastName(newValue.toString());
+    }
+
+    private void OnValidateAccountCreationDate(Object newValue) {
+        this.customer.setAccountCreationDate((Date) newValue);
     }
 }

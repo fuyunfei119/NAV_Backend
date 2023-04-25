@@ -6,6 +6,7 @@ import org.apache.ibatis.type.IntegerTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.StringTypeHandler;
 
+import java.beans.BeanInfo;
 import java.util.List;
 import java.util.Map;
 
@@ -146,6 +147,37 @@ public interface CustomerRepositry {
                     "</if>" +
                     End;
 
+    final String Insert =
+            Begin +
+            "INSERT INTO Customer" +
+                    "<foreach collection='Fields' item='Field' open='(' separator=',' close=')' >"+
+                    "${Field}"+
+                    "</foreach>"+
+                    "VALUES"+
+                    "<foreach collection='Values' item='Value' open='(' separator=',' close=')' >"+
+                    "#{Value}"+
+                    "</foreach>" +
+            End;
+
+    final String InsertWithFullField =
+            Begin +
+                    "INSERT INTO Customer " +
+                    "<foreach collection='Fields' item='Field' open='(' separator=',' close=')' >"+
+                    "${Field}"+
+                    "</foreach>" +
+                    "VALUES"+
+                    "<foreach collection='FullValues' item='FullValue' open='(' separator=',' close=')' >"+
+                    "#{FullValue}"+
+                    "</foreach>" +
+                    End;
+
+    final String Delete =
+            "DELETE FROM Customer WHERE User_ID = #{Customer.userId}";
+
+
+
+
+
     @Select(FindSet)
     List<Customer> FindSet(@Param("LoadFields") String LoadFields, @Param("Filters") List<String> Filters);
 
@@ -166,6 +198,15 @@ public interface CustomerRepositry {
 
     @Select(Count)
     Integer Count(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+
+    @Insert(Insert)
+    Integer Insert(@Param("Fields") List<String> Fields,@Param("Values") List<Object> Values);
+
+    @Insert(InsertWithFullField)
+    Integer InsertWithFullField(@Param("Fields") List<String> Fields,@Param("FullValues") List<Object> FullValues);
+
+    @Delete(Delete)
+    Integer Delete(@Param("Customer") Customer customer);
 
     @Select("SELECT Points FROM Customer WHERE Points > 100")
     List<Customer> Test();
