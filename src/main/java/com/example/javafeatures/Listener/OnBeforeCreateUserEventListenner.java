@@ -8,6 +8,5 @@ import org.springframework.stereotype.Component;
 public class OnBeforeCreateUserEventListenner implements ApplicationListener<OnBeforeInsertCustomer> {
     @Override
     public void onApplicationEvent(OnBeforeInsertCustomer event) {
-        System.out.println("OnBeforeCreateUser....");
     }
 }

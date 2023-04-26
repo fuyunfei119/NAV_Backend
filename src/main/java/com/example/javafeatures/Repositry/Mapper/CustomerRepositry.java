@@ -167,15 +167,23 @@ public interface CustomerRepositry {
                     "</foreach>" +
                     "VALUES"+
                     "<foreach collection='FullValues' item='FullValue' open='(' separator=',' close=')' >"+
-                    "#{FullValue}"+
+                    "<if test='FullValue == null'> null </if>"+
+                    "<if test='FullValue != null'> '${FullValue}' </if>"+
                     "</foreach>" +
                     End;
 
     final String Delete =
             "DELETE FROM Customer WHERE User_ID = #{Customer.userId}";
 
-
-
+    final String Modify =
+            Begin+
+            "UPDATE Customer SET" +
+                    "<foreach collection='DiffMap' index='Field' item='Value' separator=','>" +
+                    "${Field} = #{Value}" +
+                    "</foreach>" +
+                    WHERE +
+                    " User_ID = #{Customer.userId}"+
+                    End;
 
 
     @Select(FindSet)
@@ -207,6 +215,9 @@ public interface CustomerRepositry {
 
     @Delete(Delete)
     Integer Delete(@Param("Customer") Customer customer);
+
+    @Update(Modify)
+    Integer Modify(@Param("DiffMap") Map<String, Object> DiffMap,@Param("Customer") Customer customer);
 
     @Select("SELECT Points FROM Customer WHERE Points > 100")
     List<Customer> Test();

@@ -5,12 +5,16 @@ import com.example.javafeatures.Enum.CustomerFields;
 import com.example.javafeatures.Event.Init.OnAfterInitCustomer;
 import com.example.javafeatures.Event.Init.OnBeforeInitCustomer;
 import com.example.javafeatures.Event.Insert.OnBeforeInsertCustomer;
+import com.example.javafeatures.Event.Modify.OnBeforeModifyCustomer;
 import com.example.javafeatures.Repositry.Mapper.CustomerRepositry;
 import com.example.javafeatures.Utils.EntityUtils;
+import com.mysql.cj.x.protobuf.MysqlxExpr;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.Field;
 import java.sql.Date;
@@ -31,10 +35,13 @@ public class CustomerRecord {
     private final List<String> FILTERS = new ArrayList<>();
     private final List<String> LOADFIELDS = new ArrayList<>();
     private final String PrimaryKey = String.valueOf(CustomerFields.userId);
-    private Customer customer;
+    private Customer customer = new Customer();
+    private Customer X_Customer = new Customer();
+    private List<Customer> customers;
+    private List<Customer> X_Customers;
 
-    public CustomerRecord SetRange(Enum<CustomerFields> Fields, String newValue) throws NoSuchFieldException {
-        Field field = Customer.class.getDeclaredField(Fields.name());
+    public CustomerRecord SetRange(CustomerFields customerFields, String newValue) throws NoSuchFieldException {
+        Field field = Customer.class.getDeclaredField(customerFields.name());
 
         if (!FILTERS.isEmpty()) {
             FILTERS.add(" AND ");
@@ -47,11 +54,15 @@ public class CustomerRecord {
         return this;
     }
 
-    public CustomerRecord SetFilter(Enum<CustomerFields> Fields,String sqlExpression, String... newValue) throws Exception {
+    public CustomerRecord SetFilter(CustomerFields customerFields,String sqlExpression, String... newValue) throws Exception {
 
-        Field field = Customer.class.getDeclaredField(Fields.name());
+        Field field = Customer.class.getDeclaredField(customerFields.name());
 
         if (CountPlaceHolders(sqlExpression) != newValue.length) throw new Exception("the count of parameters does not match the count of placeholders");
+
+        if (!FILTERS.isEmpty()) {
+            FILTERS.add(" AND ");
+        }
 
         ParserSQLExpression(sqlExpression,field.getName(),newValue);
 
@@ -83,8 +94,12 @@ public class CustomerRecord {
     }
 
     public List<Customer> FindSet() {
-        return customerRepositry.FindSet(
-                String.join(", ", LOADFIELDS),FILTERS);
+        List<Customer> customers = customerRepositry.FindSet(
+                String.join(", ", LOADFIELDS), FILTERS);
+
+        this.customers = customers;
+
+        return customers;
     }
 
     public Customer FindFirst() {
@@ -127,6 +142,7 @@ public class CustomerRecord {
     public CustomerRecord Reset() {
         this.FILTERS.clear();
         this.LOADFIELDS.clear();
+        BeanUtils.copyProperties(this.customer,this.X_Customer);
         return this;
     }
 
@@ -150,8 +166,6 @@ public class CustomerRecord {
 
         for (String placeHolder : placeHolders) {
             String currentValue = newValue[lengthOfNewValue];
-
-            System.out.println(placeHolder);
 
             switch (placeHolder) {
                 case "|" -> finalFilter = " OR ";
@@ -215,15 +229,9 @@ public class CustomerRecord {
     }
 
     public CustomerRecord Init() {
-        this.customer = new Customer();
-
         eventPublisher.publishEvent(new OnBeforeInitCustomer(this,false));
 
-        this.customer.setAccountStatus("Active");
-        this.customer.setLastLoginDate(Date.valueOf(LocalDate.now()));
-
         eventPublisher.publishEvent(new OnAfterInitCustomer(this,false));
-
         return this;
     }
 
@@ -235,16 +243,17 @@ public class CustomerRecord {
         return this;
     }
 
-    public CustomerRecord Validate(CustomerFields customerFields, Object newValue) throws NoSuchFieldException {
+    public CustomerRecord Validate(CustomerFields customerFields, Object newValue,Boolean TriggerEvent) throws NoSuchFieldException {
 
         Customer.class.getDeclaredField(customerFields.name());
 
         switch (customerFields) {
-            case userId -> OnValidateUserID(newValue);
-            case phoneNumber -> OnValidatePhoneNumber(newValue);
-            case firstName -> OnValidateFirstName(newValue);
-            case lastName -> OnValidateLastName(newValue);
-            case accountCreationDate -> OnValidateAccountCreationDate(newValue);
+            case userId -> OnValidateUserID(newValue,TriggerEvent);
+            case phoneNumber -> OnValidatePhoneNumber(newValue,TriggerEvent);
+            case firstName -> OnValidateFirstName(newValue,TriggerEvent);
+            case lastName -> OnValidateLastName(newValue,TriggerEvent);
+            case accountStatus -> OnValidateAccountStatus(newValue,TriggerEvent);
+            case accountCreationDate -> OnValidateAccountCreationDate(newValue,TriggerEvent);
         }
 
         return this;
@@ -257,7 +266,18 @@ public class CustomerRecord {
 
     }
 
-    public Boolean Modify() { return true; }
+    public Boolean Modify(Boolean UseEvent) throws IllegalAccessException {
+        if (UseEvent) {
+            this.eventPublisher.publishEvent(new OnBeforeModifyCustomer(this));
+        }
+        System.out.println(customer.equals(X_Customer));
+        System.out.println(customer);
+        System.out.println(X_Customer);
+
+        Map<String, Object> diffMap = EntityUtils.compareObjects(customer, X_Customer);
+        System.out.println(diffMap);
+        return customerRepositry.Modify(diffMap,customer) != 0;
+    }
 
     public Boolean Insert(Boolean UseEvent,Boolean FullFields) {
 
@@ -279,23 +299,27 @@ public class CustomerRecord {
         return count != 0;
     }
 
-    private void OnValidateUserID(Object newValue) {
+    private void OnValidateUserID(Object newValue,Boolean TriggerEvent) {
         this.customer.setUserId(newValue.toString());
     }
 
-    private void OnValidatePhoneNumber(Object newValue) {
+    private void OnValidatePhoneNumber(Object newValue,Boolean TriggerEvent) {
         this.customer.setPhoneNumber(newValue.toString());
     }
 
-    private void OnValidateFirstName(Object newValue) {
+    private void OnValidateFirstName(Object newValue,Boolean TriggerEvent) {
         this.customer.setFirstName(newValue.toString());
     }
 
-    private void OnValidateLastName(Object newValue) {
+    private void OnValidateLastName(Object newValue,Boolean TriggerEvent) {
         this.customer.setLastName(newValue.toString());
     }
 
-    private void OnValidateAccountCreationDate(Object newValue) {
+    private void OnValidateAccountCreationDate(Object newValue,Boolean TriggerEvent) {
         this.customer.setAccountCreationDate((Date) newValue);
+    }
+
+    private void OnValidateAccountStatus(Object newValue,Boolean TriggerEvent) {
+        this.customer.setAccountStatus(newValue.toString());
     }
 }

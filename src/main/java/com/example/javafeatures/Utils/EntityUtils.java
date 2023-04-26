@@ -3,8 +3,7 @@ package com.example.javafeatures.Utils;
 import io.micrometer.common.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class EntityUtils {
 
@@ -91,5 +90,22 @@ public class EntityUtils {
             }
         }
         return fieldValueList;
+    }
+
+    public static Map<String, Object> compareObjects(Object obj1, Object obj2) throws IllegalAccessException {
+        Class<?> objClass = obj1.getClass();
+        Field[] fields = objClass.getDeclaredFields();
+
+        Map<String, Object> diffMap = new HashMap<>();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object obj1Value = field.get(obj1);
+            Object obj2Value = field.get(obj2);
+            if (!Objects.equals(obj1Value, obj2Value)) {
+                diffMap.put(EntityUtils.convertToSnakeCase(field.getName()), obj2Value);
+            }
+        }
+
+        return diffMap;
     }
 }

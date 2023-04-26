@@ -48,4 +48,14 @@ public class TestController {
     public Integer Test7() throws Exception {
         return customerService.CountRetailCustomerType();
     }
+
+    @GetMapping("/TestForJan")
+    public List<Customer> Test8() throws Exception {
+        return customerService.FindTop_10_CUstomer();
+    }
+
+    @GetMapping("/InsertAndModify")
+    public Customer Test9() throws Exception {
+        return customerService.InsertAndModify();
+    }
 }

@@ -27,9 +27,8 @@ public class CustomerEventListener {
         customerRecord = (CustomerRecord) event.getSource();
 
         customerRecord
-                .Validate(CustomerFields.userId,UUID.randomUUID().toString())
-                .Validate(CustomerFields.firstName,"Yunfei")
-                .Validate(CustomerFields.lastName,"Fu");
+                .Validate(CustomerFields.userId,UUID.randomUUID().toString(),true)
+                .Validate(CustomerFields.accountStatus,"Active",true);
     }
 
     @EventListener
@@ -37,7 +36,6 @@ public class CustomerEventListener {
         if (event.getHandled()) return;
 
         customerRecord = (CustomerRecord) event.getSource();
-
     }
 
     @EventListener
@@ -45,7 +43,7 @@ public class CustomerEventListener {
         customerRecord = (CustomerRecord) event.getSource();
 
         customerRecord
-                .Validate(CustomerFields.accountCreationDate, Date.valueOf(LocalDate.now()));
+                .Validate(CustomerFields.accountCreationDate, Date.valueOf(LocalDate.now()),true);
     }
 
     @EventListener

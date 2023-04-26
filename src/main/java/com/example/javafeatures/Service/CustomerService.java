@@ -3,8 +3,11 @@ package com.example.javafeatures.Service;
 import com.example.javafeatures.Entity.Customer;
 import com.example.javafeatures.Enum.CustomerFields;
 import com.example.javafeatures.Repositry.CustomerRecord;
+import com.example.javafeatures.Utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -25,6 +28,8 @@ public class CustomerService {
     private CustomerRecord record5;
     @Autowired
     private CustomerRecord record6;
+    @Autowired
+    private CustomerRecord record7;
     public List<Customer> FindSet() throws NoSuchFieldException {
 
         Boolean HasRecord = record1
@@ -133,5 +138,52 @@ public class CustomerService {
 
     }
 
+    public List<Customer> FindTop_10_CUstomer() throws Exception {
+        List<Customer> customers = record7
+                .Reset()
+                .SetLoadFields(
+                        CustomerFields.userId,
+                        CustomerFields.firstName,
+                        CustomerFields.lastName,
+                        CustomerFields.emailAddress)
+                .SetFilter(CustomerFields.emailAddress, "*%1*", "doe")
+                .Find(1);
+
+        return customers;
+    }
+
+    @Transactional
+    public Customer InsertAndModify() throws Exception {
+        Boolean SuccessModified = false;
+
+         record7
+                .Reset()
+                .Init()
+                .Validate(CustomerFields.firstName, "YUNFEI", true)
+                .Validate(CustomerFields.lastName, "FU", true)
+                .Insert(true, true);
+
+        Customer customer = record7
+                .Reset()
+                .SetLoadFields(
+                        CustomerFields.firstName,
+                        CustomerFields.lastName,
+                        CustomerFields.accountStatus)
+                .SetRange(CustomerFields.firstName, "YUNFEI")
+                .SetRange(CustomerFields.lastName, "FU")
+                .FindFirst();
+
+        if (!ObjectUtils.isEmpty(customer)) {
+            SuccessModified = record7
+                    .Validate(CustomerFields.accountStatus, "Inactive", true)
+                    .Modify(true);
+        }
+
+        if (!SuccessModified) {
+            throw new Exception("Modify Failed.");
+        }
+
+        return record7.GetRecord();
+    }
 
 }
