@@ -1,17 +1,14 @@
-package com.example.javafeatures.Repositry.Mapper;
+package com.example.javafeatures.Dao;
 
-import com.example.javafeatures.Entity.Customer;
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.IntegerTypeHandler;
-import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.StringTypeHandler;
 
-import java.beans.BeanInfo;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface CustomerRepositry {
+public interface Repositry {
 
     final String Begin = "<script>";
     final String End = "</script>";
@@ -173,7 +170,7 @@ public interface CustomerRepositry {
                     End;
 
     final String Delete =
-            "DELETE FROM Customer WHERE User_ID = #{Customer.userId}";
+            "DELETE FROM Customer WHERE User_ID = #{Entity.userId}";
 
     final String Modify =
             Begin+
@@ -182,27 +179,27 @@ public interface CustomerRepositry {
                     "${Field} = #{Value}" +
                     "</foreach>" +
                     WHERE +
-                    " User_ID = #{Customer.userId}"+
+                    " ${PK_Field} = #{PK_Value}"+
                     End;
 
 
     @Select(FindSet)
-    List<Customer> FindSet(@Param("LoadFields") String LoadFields, @Param("Filters") List<String> Filters);
+    List<LinkedHashMap<String,Object>> FindSet(@Param("LoadFields") String LoadFields, @Param("Filters") List<String> Filters);
 
     @Select(IsEmpty)
     Integer IsEmpty(@Param("LoadFields") String LoadFields, @Param("Filters") List<String> Filters);
 
     @Select(FindFirst)
-    Customer FindFirst(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+    List<LinkedHashMap<String,Object>> FindFirst(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
 
     @Select(FindLast)
-    Customer FindLast(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+    List<LinkedHashMap<String,Object>> FindLast(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
 
     @Select(Find)
-    List<Customer> Find(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters,@Param("Count") Integer Count);
+    List<LinkedHashMap<String,Object>> Find(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters,@Param("Count") Integer Count);
 
     @Select(Get)
-    Customer Get(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
+    List<LinkedHashMap<String,Object>> Get(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
 
     @Select(Count)
     Integer Count(@Param("LoadFields") String LoadFields,@Param("Filters") List<String> Filters);
@@ -214,12 +211,13 @@ public interface CustomerRepositry {
     Integer InsertWithFullField(@Param("Fields") List<String> Fields,@Param("FullValues") List<Object> FullValues);
 
     @Delete(Delete)
-    Integer Delete(@Param("Customer") Customer customer);
+    Integer Delete(@Param("Entity") Object Entity);
 
     @Update(Modify)
-    Integer Modify(@Param("DiffMap") Map<String, Object> DiffMap,@Param("Customer") Customer customer);
+    Integer Modify(@Param("DiffMap") Map<String, Object> DiffMap, @Param("PK_Field") String Field, @Param("PK_Value") Object Value);
 
     @Select("SELECT Points FROM Customer WHERE Points > 100")
-    List<Customer> Test();
+    List<LinkedHashMap<String,Object>> Test();
+
 
 }
