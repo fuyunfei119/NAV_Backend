@@ -1,14 +1,13 @@
-package com.example.javafeatures.Dao;
+package com.example.javafeatures.Dao.Mapper;
 
 import org.apache.ibatis.annotations.*;
 
-import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface Repositry {
+public interface BusinessCentralMapper {
 
     final String Begin = "<script>";
     final String End = "</script>";

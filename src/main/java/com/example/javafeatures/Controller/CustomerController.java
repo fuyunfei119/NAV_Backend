@@ -6,16 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
-public class TestController {
+public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
 
+    @GetMapping("/Test1")
+    public List<Customer> Test1() throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return customerService.test();
+    }
+
     @GetMapping("/Customers")
-    public List<Customer> FindSet() throws NoSuchFieldException {
+    public List<Customer> FindSet() throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return customerService.FindSet();
     }
 
@@ -25,12 +31,12 @@ public class TestController {
     }
 
     @GetMapping("/Test3")
-    public Customer Test3() throws Exception {
+    public List<Customer> Test3() throws Exception {
         return customerService.GetFirstCustomerLocatedInUSA();
     }
 
     @GetMapping("/Test4")
-    public Customer Test4() throws NoSuchFieldException {
+    public List<Customer> Test4() throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return customerService.GetLastRetailCustomer();
     }
 
@@ -40,7 +46,7 @@ public class TestController {
     }
 
     @GetMapping("/Test6")
-    public Customer Test6() {
+    public List<Customer> Test6() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return customerService.GetCustomer();
     }
 

@@ -1,24 +1,23 @@
 package com.example.javafeatures.Dao;
 
-import com.example.javafeatures.Annotation.PK;
-import com.example.javafeatures.Dao.MySQLImplementation;
+import com.example.javafeatures.Dao.Impl.BusinessCentralMYSQLImpl;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Repository
-public interface NAVRepo<T,E extends Enum<E>> {
+public interface BusinessCentral<T,E extends Enum<E>> {
 
-    MySQLImplementation<T,E> SetSource(Class<T> tClass) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException;
+    BusinessCentralMYSQLImpl<T,E> SetSource(Class<T> tClass) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException;
 
-    MySQLImplementation<T,E> SetRange(E entityFields, String newValue) throws Exception;
+    BusinessCentralMYSQLImpl<T,E> SetRange(E entityFields, String newValue) throws Exception;
 
-    MySQLImplementation<T,E> SetFilter(E entityFields, String sqlExpression, String... newValue) throws Exception;
+    BusinessCentralMYSQLImpl<T,E> SetFilter(E entityFields, String sqlExpression, String... newValue) throws Exception;
 
-    MySQLImplementation<T,E> SetLoadFields(E entityFields) throws Exception;
+    BusinessCentralMYSQLImpl<T,E> SetLoadFields(E entityFields) throws Exception;
 
-    MySQLImplementation<T,E> SetLoadFields(E... entityFields) throws Exception;
+    BusinessCentralMYSQLImpl<T,E> SetLoadFields(E... entityFields) throws Exception;
 
     Boolean IsEmpty();
 
@@ -34,17 +33,17 @@ public interface NAVRepo<T,E extends Enum<E>> {
 
     Integer Count() throws Exception;
 
-    MySQLImplementation<T,E> Reset();
+    BusinessCentralMYSQLImpl<T,E> Reset();
 
-    MySQLImplementation<T,E> Init();
+    BusinessCentralMYSQLImpl<T,E> Init();
 
     T GetRecord();
 
     T GetX_Record();
 
-    MySQLImplementation<T,E> SetCurrentKey();
+    BusinessCentralMYSQLImpl<T,E> SetCurrentKey();
 
-    MySQLImplementation<T,E> Validate(E entityFields, Object newValue, Boolean TriggerEvent) throws Exception;
+    BusinessCentralMYSQLImpl<T,E> Validate(E entityFields, Object newValue, Boolean TriggerEvent) throws Exception;
 
     Boolean Delete();
 

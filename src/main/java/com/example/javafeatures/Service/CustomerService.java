@@ -1,38 +1,57 @@
 package com.example.javafeatures.Service;
 
+import com.example.javafeatures.Dao.BusinessCentral;
 import com.example.javafeatures.Entity.Customer;
 import com.example.javafeatures.Enum.CustomerFields;
-import com.example.javafeatures.Repositry.CustomerRecord;
-import com.example.javafeatures.Utils.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.sql.Date;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class CustomerService {
 
+    private final BusinessCentral<Customer,CustomerFields> businessCentral;
+
     @Autowired
-    private CustomerRecord record1;
+    public CustomerService(BusinessCentral<Customer, CustomerFields> businessCentral) {
+        this.businessCentral = businessCentral;
+    }
+
+    public List<Customer> test() throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        List<Customer> customers = businessCentral
+                .SetSource(Customer.class)
+                .Reset()
+                .SetLoadFields(CustomerFields.userId, CustomerFields.firstName, CustomerFields.lastName, CustomerFields.accountStatus, CustomerFields.customerType)
+                .SetRange(CustomerFields.accountStatus, "Active")
+                .FindSet();
+
+        return customers;
+    }
+
+
     @Autowired
-    private CustomerRecord record2;
+    private BusinessCentral<Customer,CustomerFields> record1;
     @Autowired
-    private CustomerRecord record3;
+    private BusinessCentral<Customer,CustomerFields> record2;
     @Autowired
-    private CustomerRecord record4;
+    private BusinessCentral<Customer,CustomerFields> record3;
     @Autowired
-    private CustomerRecord record5;
+    private BusinessCentral<Customer,CustomerFields> record4;
     @Autowired
-    private CustomerRecord record6;
+    private BusinessCentral<Customer,CustomerFields> record5;
     @Autowired
-    private CustomerRecord record7;
-    public List<Customer> FindSet() throws NoSuchFieldException {
+    private BusinessCentral<Customer,CustomerFields> record6;
+    @Autowired
+    private BusinessCentral<Customer,CustomerFields> record7;
+    public List<Customer> FindSet() throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         Boolean HasRecord = record1
+                .SetSource(Customer.class)
                 .Reset()
                 .SetLoadFields(CustomerFields.Points)
                 .SetRange(CustomerFields.customerType, "Retail")
@@ -45,6 +64,7 @@ public class CustomerService {
         }
 
         List<Customer> customers = record2
+                .SetSource(Customer.class)
                 .SetLoadFields(CustomerFields.userId)
                 .SetLoadFields(CustomerFields.firstName)
                 .SetLoadFields(CustomerFields.lastName)
@@ -60,6 +80,7 @@ public class CustomerService {
     public List<Customer> CheckIfCustomerHasOver_100_Balance() throws Exception {
 
         List<Customer> customers = record2
+                .SetSource(Customer.class)
                 .Reset()
                 .SetLoadFields(
                         CustomerFields.userId,
@@ -72,9 +93,10 @@ public class CustomerService {
         return customers;
     }
 
-    public Customer GetFirstCustomerLocatedInUSA() throws Exception {
+    public List<Customer> GetFirstCustomerLocatedInUSA() throws Exception {
 
-        Customer customer = record3
+        List<Customer> customers = record3
+                .SetSource(Customer.class)
                 .Reset()
                 .SetLoadFields(
                         CustomerFields.userId,
@@ -86,12 +108,13 @@ public class CustomerService {
                 .SetFilter(CustomerFields.emailAddress, "%1*%2", "j", ".com")
                 .FindFirst();
 
-        return customer;
+        return customers;
     }
 
-    public Customer GetLastRetailCustomer() throws NoSuchFieldException {
+    public List<Customer> GetLastRetailCustomer() throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
-        Customer customer = record4
+        List<Customer> customers = record4
+                .SetSource(Customer.class)
                 .Reset()
                 .SetLoadFields(
                         CustomerFields.userId,
@@ -101,12 +124,13 @@ public class CustomerService {
                 .SetRange(CustomerFields.customerType, "Retail")
                 .FindLast();
 
-        return customer;
+        return customers;
     }
 
     public List<Customer> GetFirst_10_ActiveCustomer() throws Exception {
 
         List<Customer> customers = record4
+                .SetSource(Customer.class)
                 .Reset()
                 .SetFilter(CustomerFields.lastLoginDate, ">%1", String.valueOf(LocalDate.of(2022,3,1)))
                 .Find(10);
@@ -114,19 +138,21 @@ public class CustomerService {
         return customers;
     }
 
-    public Customer GetCustomer() {
+    public List<Customer> GetCustomer() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
-        Customer customer = record5
+        List<Customer> customers = record5
+                .SetSource(Customer.class)
                 .Reset()
                 .Get("f9f27b13-e7ef-4057-b2ce-dd9a181612b5");
 
-        return customer;
+        return customers;
 
     }
 
     public Integer CountRetailCustomerType() throws Exception {
 
         Integer count = record6
+                .SetSource(Customer.class)
                 .Reset()
                 .SetLoadFields(
                         CustomerFields.userId
@@ -140,6 +166,7 @@ public class CustomerService {
 
     public List<Customer> FindTop_10_CUstomer() throws Exception {
         List<Customer> customers = record7
+                .SetSource(Customer.class)
                 .Reset()
                 .SetLoadFields(
                         CustomerFields.userId,
@@ -157,13 +184,14 @@ public class CustomerService {
         Boolean SuccessModified = false;
 
          record7
+                 .SetSource(Customer.class)
                 .Reset()
                 .Init()
                 .Validate(CustomerFields.firstName, "YUNFEI", true)
                 .Validate(CustomerFields.lastName, "FU", true)
                 .Insert(true, true);
 
-        Customer customer = record7
+        List<Customer> customers = record7
                 .Reset()
                 .SetLoadFields(
                         CustomerFields.firstName,
@@ -173,10 +201,10 @@ public class CustomerService {
                 .SetRange(CustomerFields.lastName, "FU")
                 .FindFirst();
 
-        if (!ObjectUtils.isEmpty(customer)) {
+        if (!ObjectUtils.isEmpty(customers)) {
             SuccessModified = record7
                     .Validate(CustomerFields.accountStatus, "Inactive", true)
-                    .Modify(true);
+                    .Modify(false);
         }
 
         if (!SuccessModified) {

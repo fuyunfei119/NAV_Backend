@@ -1,12 +1,11 @@
 package com.example.javafeatures.Entity;
 
 
-import org.springframework.util.ObjectUtils;
-
-import java.lang.runtime.ObjectMethods;
+import com.example.javafeatures.Annotation.PK;
 import java.sql.Date;
 
 public class Customer {
+  @PK
   private String userId;
   private String firstName;
   private String lastName;

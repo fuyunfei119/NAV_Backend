@@ -1,5 +1,7 @@
-package com.example.javafeatures.Dao;
+package com.example.javafeatures.Dao.Impl;
 
+import com.example.javafeatures.Dao.BusinessCentral;
+import com.example.javafeatures.Dao.Mapper.BusinessCentralMapper;
 import com.example.javafeatures.Event.Init.OnAfterInitCustomer;
 import com.example.javafeatures.Event.Init.OnBeforeInitCustomer;
 import com.example.javafeatures.Event.Insert.OnBeforeInsertCustomer;
@@ -19,10 +21,10 @@ import java.util.regex.Pattern;
 import static com.example.javafeatures.Enum.CustomerFields.*;
 
 @Repository
-public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
+public class BusinessCentralMYSQLImpl<T,E extends Enum<E>> implements BusinessCentral<T,E> {
 
     @Autowired
-    private Repositry repositry;
+    private BusinessCentralMapper businessCentralMapper;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
     private final List<String> FILTERS = new ArrayList<>();
@@ -36,7 +38,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     private List<T> X_Entities;
 
     @Override
-    public MySQLImplementation<T, E> SetSource(Class<T> tClass) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public BusinessCentralMYSQLImpl<T, E> SetSource(Class<T> tClass) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         this.tClass = tClass;
         this.PrimaryKey = getPrimaryKeyField(this.tClass);
 
@@ -48,7 +50,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     }
 
     @Override
-    public MySQLImplementation<T,E> SetRange(E entityField, String newValue) throws NoSuchFieldException {
+    public BusinessCentralMYSQLImpl<T,E> SetRange(E entityField, String newValue) throws NoSuchFieldException {
 
         Field field = tClass.getDeclaredField(entityField.name());
 
@@ -62,7 +64,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     }
 
     @Override
-    public MySQLImplementation<T,E> SetFilter(E entityField, String sqlExpression, String... newValue) throws Exception {
+    public BusinessCentralMYSQLImpl<T,E> SetFilter(E entityField, String sqlExpression, String... newValue) throws Exception {
 
         Field field = tClass.getDeclaredField(entityField.name());
 
@@ -78,7 +80,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     }
 
     @Override
-    public MySQLImplementation<T,E> SetLoadFields(E entityField) throws NoSuchFieldException {
+    public BusinessCentralMYSQLImpl<T,E> SetLoadFields(E entityField) throws NoSuchFieldException {
         Field field = tClass.getDeclaredField(entityField.name());
 
         this.LOADFIELDS.add(convertToSnakeCase(field.getName()));
@@ -87,7 +89,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     }
 
     @Override
-    public MySQLImplementation<T,E> SetLoadFields(E... entityField) throws NoSuchFieldException {
+    public BusinessCentralMYSQLImpl<T,E> SetLoadFields(E... entityField) throws NoSuchFieldException {
         for (Enum<E> field : entityField) {
             Field finalField = this.tClass.getDeclaredField(field.name());
 
@@ -98,14 +100,14 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
 
     @Override
     public Boolean IsEmpty() {
-        return repositry.IsEmpty(
+        return businessCentralMapper.IsEmpty(
                 String.join(", ", LOADFIELDS),FILTERS) != 0;
     }
 
     @Override
     public List<T> FindSet() {
 
-        List list = repositry.FindSet(String.join(", ", LOADFIELDS), FILTERS);
+        List list = businessCentralMapper.FindSet(String.join(", ", LOADFIELDS), FILTERS);
 
         this.Entities = list;
 
@@ -114,18 +116,18 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
 
     @Override
     public List<T> FindFirst() {
-        List list = (List) repositry.FindFirst(String.join(", ", LOADFIELDS), FILTERS);
+        List list = (List) businessCentralMapper.FindFirst(String.join(", ", LOADFIELDS), FILTERS);
         return list;
     }
 
     @Override
     public List<T> FindLast() {
-        return (List) repositry.FindLast(String.join(", ", LOADFIELDS),FILTERS);
+        return (List) businessCentralMapper.FindLast(String.join(", ", LOADFIELDS),FILTERS);
     }
 
     @Override
     public List<T> Find(Integer Count) {
-        return (List) repositry.Find(String.join(", ", LOADFIELDS), FILTERS, Count);
+        return (List) businessCentralMapper.Find(String.join(", ", LOADFIELDS), FILTERS, Count);
     }
 
     @Override
@@ -133,7 +135,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
         this.FILTERS.clear();
         FILTERS.add(convertToSnakeCase(PrimaryKey.getName() + " = " + "'" + ID + "'"));
 
-        return (List) repositry.Get(String.join(", ", LOADFIELDS),FILTERS);
+        return (List) businessCentralMapper.Get(String.join(", ", LOADFIELDS),FILTERS);
     }
 
     @Override
@@ -141,11 +143,11 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
 
         if (LOADFIELDS.size() > 1) throw new Exception("There are more than one fields within Count expression!");
 
-        return repositry.Count(String.join(", ", LOADFIELDS),FILTERS);
+        return businessCentralMapper.Count(String.join(", ", LOADFIELDS),FILTERS);
     }
 
     @Override
-    public MySQLImplementation<T,E> Reset() {
+    public BusinessCentralMYSQLImpl<T,E> Reset() {
         this.FILTERS.clear();
         this.LOADFIELDS.clear();
         BeanUtils.copyProperties(this.Entity,this.X_Entity);
@@ -236,7 +238,7 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     }
 
     @Override
-    public MySQLImplementation<T,E> Init() {
+    public BusinessCentralMYSQLImpl<T,E> Init() {
         eventPublisher.publishEvent(new OnBeforeInitCustomer(this,false));
 
         eventPublisher.publishEvent(new OnAfterInitCustomer(this,false));
@@ -252,12 +254,12 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
     public T GetX_Record() { return this.X_Entity; }
 
     @Override
-    public MySQLImplementation<T,E> SetCurrentKey() {
+    public BusinessCentralMYSQLImpl<T,E> SetCurrentKey() {
         return this;
     }
 
     @Override
-    public MySQLImplementation<T,E> Validate(E entityField, Object newValue, Boolean TriggerEvent) throws NoSuchFieldException, IllegalAccessException {
+    public BusinessCentralMYSQLImpl<T,E> Validate(E entityField, Object newValue, Boolean TriggerEvent) throws NoSuchFieldException, IllegalAccessException {
 
         tClass.getDeclaredField(entityField.name());
 
@@ -290,14 +292,14 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
         field.setAccessible(true);
         this.PK_Value = field.get(this.Entity);
 
-        return repositry.Modify(diffMap,convertToSnakeCase(PrimaryKey.getName()),PK_Value) != 0;
+        return businessCentralMapper.Modify(diffMap,convertToSnakeCase(PrimaryKey.getName()),PK_Value) != 0;
     }
 
     @Override
     public Boolean Delete() {
         eventPublisher.publishEvent(new OnBeforeInitCustomer(this,false));
 
-        repositry.Delete(this.Entity);
+        businessCentralMapper.Delete(this.Entity);
         return true;
 
     }
@@ -315,9 +317,9 @@ public class MySQLImplementation<T,E extends Enum<E>> implements NAVRepo<T,E>{
         Integer count;
 
         if (FullFields) {
-            count = repositry.InsertWithFullField(fieldNameList,valueList);
+            count = businessCentralMapper.InsertWithFullField(fieldNameList,valueList);
         }else {
-            count = repositry.Insert(fieldNameList,valueList);
+            count = businessCentralMapper.Insert(fieldNameList,valueList);
         }
 
         return count != 0;
